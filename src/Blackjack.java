@@ -1,3 +1,8 @@
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
+
 /**
  * <p><b>
  * Project: Blackjack
@@ -64,6 +69,8 @@
  *
  */
 public class Blackjack {
+    
+    static final char PROMPT_CHAR = '>';
 
     public static void main(String[] args) throws SuitDeckCreationException {
 
@@ -77,17 +84,145 @@ public class Blackjack {
             playDeck = new Deck();
         }catch(DeckCreationException e){
             e.printStackTrace();
+            System.exit(1);
         }
         playDeck.shuffle();
         playDeck.shuffle();
-        
-        Player player1 = new Player();
+        List<Player> playerList = new LinkedList<Player>();
+        playerList.add(new Player());
         Player dealer = new Player(true);
         
-                
+        Scanner sysInScanner= new Scanner(System.in);
         
+        Boolean stillPlaying = promptDeal(sysInScanner);
+        
+        while(stillPlaying){
+            promptBet(sysInScanner, playerList);
+            try{
+                dealPlayers(playerList, playDeck, true);
+                dealer.draw(playDeck, true);
+                dealPlayers(playerList, playDeck, true);
+                dealer.draw(playDeck);
+            }catch(DeckEmptyException e){
+                System.out.println("Error in deck of cards during play");
+                e.printStackTrace();
+                sysInScanner.close();
+                System.exit(1);
+            }
+            printField(playerList);
+            resolveNaturals(playerList, dealer);
+            
+            stillPlaying = promptDeal(sysInScanner);
+            
+        }
         
 
     }
+    
+    private static void resolveNaturals(List<Player> playerList, Player dealer){        
+        if(playerList.equals(null) || dealer.equals(null) || playerList.isEmpty()){
+            throw new IllegalArgumentException();
+        }
+        List<Card> dealerHand = dealer.getHand();
+        for(int i = 0; i < dealerHand.size(); i++){
+            if(dealerHand.get(i).getPointValue() == 10){
+            }
+        }
+        if(dealer.getHand())
+        
+        for(int i = 0; i < playerList.size(); i++){
+            if(has21(playerList.get(i))){
+                
+            }
+        }
+        
+
+    }
+    
+    private static void dealPlayers(List<Player> playerList, Deck playDeck, Boolean faceUp) throws DeckEmptyException{
+        if(playDeck.equals(null)){
+            throw new DeckEmptyException();
+        }
+        if(faceUp.equals(null) || playerList.equals(null)){
+            throw new IllegalArgumentException();
+        }
+        for(int i = 0; i < playerList.size(); i++){
+            playerList.get(i).draw(playDeck, faceUp);
+        }
+    }
+
+    private static void printField(List<Player> playerList) {
+        for(int i = 0; i < playerList.size(); i++){
+            playerList.get(i).printHand();
+        }
+    }
+
+    /**
+     * prompts the list of users for bet amounts
+     * @param sysInScanner
+     * @param playerList
+     * @return true if all bets were placed
+     */
+    private static void promptBet(Scanner sysInScanner, List<Player> playerList) {
+        Boolean r = false;
+        for(int i = 0; i < playerList.size(); i++){
+            r = promptBet(sysInScanner, playerList.get(i));
+            while(!r){
+                promptBet(sysInScanner, playerList.get(i));
+            }
+        }
+    }
+
+    /**
+     * prompts the user for a bet amount and verifies
+     * @param sysInScanner
+     * @param tarPlayer
+     * @return
+     */
+    private static Boolean promptBet(Scanner sysInScanner, Player tarPlayer){
+        System.out.println("Enter Bet Amount");
+        System.out.print(PROMPT_CHAR);
+        String userInput = sysInScanner.nextLine().trim();
+        return validBet(userInput, tarPlayer);
+    }
+
+    /**
+     * Prompts the user as to whether another game should be dealt
+     * @param sysInScanner
+     * @return
+     */
+    private static Boolean promptDeal(Scanner sysInScanner) {
+        System.out.println("Deal? (y/n)");
+        System.out.print(PROMPT_CHAR);
+        String userInput = sysInScanner.nextLine().trim();
+        if(!userInput.equals(null) && userInput.length() == 1 && (userInput.charAt(0) == 'y')){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Verifies a given string is a valid double value, that does not exceed the player's wallet, and places bet. 
+     * @param userInput
+     * @return
+     */
+    private static boolean validBet(String userInput, Player bettingPlayer) {
+        if(userInput.equals(null)){
+            return false;
+        }
+        try{
+            Double bet = Double.parseDouble(userInput);
+            bettingPlayer.bet(bet);
+        }catch(NumberFormatException e){
+            System.out.println("Invalid bet format");
+            return false;
+        }catch(OutOfMoneyException e){
+            System.out.println("Insufficient funds");
+            return false;
+        }
+        return true;
+    }
+    
+    
 
 }

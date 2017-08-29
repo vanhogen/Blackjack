@@ -74,6 +74,17 @@ public class Deck {
         return r;
     }
     
+    Card draw(Boolean faceUp) throws DeckEmptyException{
+        if(this.deck.isEmpty()){
+            throw new DeckEmptyException();
+        }
+        Card r = this.deck.pop();
+        this.numItems--;
+        this.wasteDeck.push(r);
+        r.setFaceUp(faceUp);
+        return r;
+    }
+    
     /**
      * Number of items currently in the deck
      * @return numItems

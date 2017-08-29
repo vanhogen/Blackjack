@@ -10,10 +10,10 @@ import java.util.List;
  *
  */
 public class Player {
-    List<Card> hand;
-    Boolean isDealer;
-    double wallet;
-    double moneyInPot;
+    private List<Card> hand;
+    private Boolean isDealer;
+    private double wallet;
+    private double moneyInPot;
     
     public Player(){
         this.hand = new ArrayList<Card>();
@@ -88,7 +88,26 @@ public class Player {
         this.wallet -= amount;
         return amount;
     }
+    void draw(Deck deck) throws DeckEmptyException{
+        hand.add(deck.draw());
+    }
+    void draw(Deck deck, Boolean faceup) throws DeckEmptyException{
+        hand.add(deck.draw(faceup));
+    }
+    void printHand(){
+        for(int i = 0; i < hand.size(); i++){
+            if(hand.get(i).isFaceUp()){
+                System.out.println(hand.get(i).getFaceValue() + " of " + hand.get(i).getSuit());
+            }else{
+                System.out.println("Card facing down");
+            }
+        }
+    }
+    List<Card> getHand(){
+        return this.hand;
+    }
     
+        
     
     
 

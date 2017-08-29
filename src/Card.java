@@ -12,6 +12,7 @@ class Card {
     private int value;
     private Suit suit;
     private String cardName;
+    private Boolean faceUp;
     
     
     /**
@@ -31,7 +32,7 @@ class Card {
         }catch(IllegalArgumentException e){
             throw new CardCreationException();
         }
-       
+        this.faceUp = false;
     }
     
     /**
@@ -91,23 +92,48 @@ class Card {
      * @return suit of card
      */
     Suit getSuit(){
-        return this.suit;
+        if(faceUp){
+            return this.suit;
+        }
+        return null;
+        
     }
     /**
      * Getter for face value
      * @return face value of card
      */
     FaceValue getFaceValue(){
-        return this.faceValue;
+        if(faceUp){
+            return this.faceValue;
+        }
+        return null;
     }
     /**
      * Getter for point value
      */
-    int getPointValue(){
-        return this.value;
+    Integer getPointValue(){
+        if(faceUp){
+            return this.value;
+        }
+        return null;
     }
     
     public String toString(){
-        return this.cardName + " " + this.suit;
+        if(faceUp){
+            return this.cardName + " " + this.suit;
+        }
+        return null;
+    }
+    
+    public Boolean isFaceUp(){
+        return faceUp;
+    }
+    
+    public void setFaceUp(Boolean faceUp){
+        this.faceUp = faceUp;
+    }
+    
+    public void flip(){
+        this.faceUp = !this.faceUp;
     }
 }
